@@ -18,9 +18,11 @@ import java.util.List;
 public class DataBaseService {
 
     private UserDAO usersDao;
+    private MessageDAO messageDao;
 
     public DataBaseService() {
         usersDao = new UserDAO();
+        messageDao = new MessageDAO();
     }
 
     public void insertUser(User user) {
@@ -35,8 +37,12 @@ public class DataBaseService {
         usersDao.update(user);
     }
 
-    public User getUser(int id) {
+    public User getUser(long id) {
         return usersDao.get(id);
+    }
+
+    public User getUserByName(String userName) {
+        return usersDao.get(userName);
     }
 
     public List<User> getAllUsers() {
@@ -46,21 +52,30 @@ public class DataBaseService {
     public List<String> getAllUserNames() {
         List<String> names = new ArrayList<>();
         for (User user : usersDao.get()) {
-            names.add(user.getName());
+            names.add(user.getAccount_name());
         }
         return names;
     }
 
-    public void addSentMessage(int userId, Message message) {
-        usersDao.addSentMessage(userId, message);
+    public List<Long> getAllUserId() {
+        List<Long> ides = new ArrayList<>();
+        for (User user : usersDao.get()) {
+            ides.add(user.getUid());
+        }
+        return ides;
     }
 
-    public void addReceivedMessage(int userId, Message message) {
-        usersDao.addReceivedMessage(userId, message);
+    public void addMessage(long receiverId, long senderID, Message message) {
+        messageDao.addSentMessage(senderID, message);
+        messageDao.addReceivedMessage(receiverId, message);
     }
 
-    public Message findMessageById(int id) {
-        return usersDao.findMessageById(id);
+    public List<Message> getChat(User user1, User user2){
+        return messageDao.get(user1, user2);
+    }
+
+    public Message findMessageById(long id) {
+        return messageDao.findMessageById(id);
     }
 
     public void close(){
